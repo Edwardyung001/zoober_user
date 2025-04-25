@@ -12,7 +12,7 @@ class SplashscreenBloc extends Bloc<SplashscreenEvent, SplashscreenState> {
 
   Future<void> splashScreenRountingEvent(
       SplashScreenRountingEvent event, Emitter<SplashscreenState> emit) async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 4));
 
     String? token = await SecureStorage.getValue('token');
 

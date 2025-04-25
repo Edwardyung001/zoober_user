@@ -44,7 +44,6 @@ class SignupUserData {
     };
   }
 }
-
 class SignupModel extends SignupEntity {
   SignupModel({
     required bool success,
@@ -56,7 +55,10 @@ class SignupModel extends SignupEntity {
     return SignupModel(
       success: json['success'] ?? false,
       message: json['message'] ?? '',
-      data: json['data'] != null ? SignupUserData.fromJson(json['data']) : null,
+      // Only parse data when success is true
+      data: json['success'] == true && json['data'] != null
+          ? SignupUserData.fromJson(json['data'])
+          : null,
     );
   }
 
@@ -64,7 +66,7 @@ class SignupModel extends SignupEntity {
     return {
       'success': success,
       'message': message,
-      'data': data?.toJson(),
+      'data': data?.toJson(), // Only include data if it exists
     };
   }
 }

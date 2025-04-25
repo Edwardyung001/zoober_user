@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zoober_user_ride/core/constants/routing.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
@@ -40,13 +41,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthLoading) {
-            // Show loading snackbar or indicator
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Signing up...")),
-            );
+            print('loading');
+
           } else if (state is SignupSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(content: Text(state.message,),backgroundColor: Colors.green,),
             );
             navigateTo(context, LoginScreen());
           } else if (state is AuthFailure) {
@@ -71,7 +70,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   children: [
                     SizedBox(
                       height: mediaQuery.height * 0.02,
-                      child: Image.asset('Assets/screenLogo.png'),
+                      child: Image.asset('Assets/logo2.jpg'),
                     ),
                   ],
                 ),
@@ -127,10 +126,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 SizedBox(height: mediaQuery.height * 0.02),
                 TextField(
                   controller: emailController,
+                  keyboardType: TextInputType.emailAddress, // This will show the email keyboard on mobile devices
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9@._-]')), // Allows only email-related characters
+                  ],
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(mediaQuery.width * 0.02),
+                      borderRadius: BorderRadius.circular(mediaQuery.width * 0.02),
                     ),
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email),
@@ -197,6 +199,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 TextField(
                   controller: passwordController,
                   obscureText: _obscureText,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(10),
+                  ],
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(mediaQuery.width * 0.02),
@@ -216,6 +221,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 SizedBox(height: mediaQuery.height * 0.04),
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    return Column(
+                      children: [
+                        if (state is LoginFailed)
+                          Text(
+                            state.errorMessage,
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        // Your form widgets here
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(height: mediaQuery.height * 0.04),
 
                 /// ⏩ Custom SIGN UP button with BLoC
                 InkWell(
@@ -225,25 +245,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     final firstName = firstNameController.text.trim();
                     final lastName = lastNameController.text.trim();
                     final gender = selectedGender;
-                    final dob=dobController.text;
-                    final password = passwordController.text
-                        .trim();
-                    if (email.isNotEmpty && mobileNumber.isNotEmpty) {
+                    final dob = dobController.text;
+                    final password = passwordController.text.trim();
+
+
+                    if (email.isNotEmpty && mobileNumber.isNotEmpty && password.isNotEmpty && gender != null && gender.isNotEmpty) {
+
+                      if (password.length < 6) {
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Password must be at least 10 characters long")),
+                        );
+                        return;
+                      }
+
+                      // Proceed with the signup request if all fields are valid
                       context.read<AuthBloc>().add(SignupRequested(
                         email: email,
                         mobileNumber: mobileNumber,
                         firstName: firstName,
                         lastName: lastName,
-                        gender: gender!,
+                        gender: gender,
                         dob: dob.toString(),
                         password: password,
                       ));
                     } else {
+                      // Show snackbar if any required field (email, mobileNumber, password) is missing
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Please fill all fields")),
+                        SnackBar(content: Text("Please fill all required fields (Email, Mobile Number, gender and Password)")),
                       );
                     }
                   },
+
                   child: custombutton(text: "SIGN UP"),
                 ),
 

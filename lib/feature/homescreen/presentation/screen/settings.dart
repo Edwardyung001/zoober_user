@@ -126,14 +126,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 );
               },
-              child: InkWell(
-                onTap: () async {
-                  String? userId = await SecureStorage.getValue('userId');
-                  context.read<HomeBloc>().add(DeleteAccountRequested(userId:userId!));
-                },
-                child: _buildSettingsItem(context, Icons.delete_outline,
-                    'Delete Account', Color(0xffFF2D55)),
-              ),
+              child: _buildSettingsItem(context, Icons.delete_outline,
+                  'Delete Account', Color(0xffFF2D55)),
             ),
             Divider(color: Color.fromARGB(255, 228, 228, 228)),
           ],
@@ -178,41 +172,72 @@ class _SettingsPageState extends State<SettingsPage> {
 class DeleteAccount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        color: white,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Divider(
-              color: Colors.grey,
-              thickness: 3,
-              indent: MediaQuery.of(context).size.width * 0.4,
-              endIndent: MediaQuery.of(context).size.width * 0.4,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Text(
-                  'Are you want to delete your account ?',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            const SizedBox(
-                width: double.infinity,
-                child: custombutton(
-                  text: "Delete",
-                  buttoncolor1: Color.fromARGB(255, 250, 226, 11),
-                  buttoncolor2: Color.fromARGB(255, 250, 226, 11),
-                )),
-            const SizedBox(height: 16),
-            const SizedBox(
-                width: double.infinity, child: custombutton(text: "Go Back")),
-            const SizedBox(height: 16),
-          ],
+    return BlocListener<HomeBloc, HomeState>(
+      listener: (context, state) async{
+        if (state is HomeLoading) {
+
+          print('loading');
+        } else if (state is DeleteAccountSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message),backgroundColor: Colors.green,),
+          );
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+                (Route<dynamic> route) => false,
+          );
+
+        }
+        else if (state is HomeFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error: ${state.error}")),
+          );
+          print("Error: ${state.error}");
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Container(
+          color: white,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Divider(
+                color: Colors.grey,
+                thickness: 3,
+                indent: MediaQuery.of(context).size.width * 0.4,
+                endIndent: MediaQuery.of(context).size.width * 0.4,
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Text(
+                    'Are you want to delete your account ?',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              InkWell(
+                onTap: () async {
+                  String? userId = await SecureStorage.getValue('userId');
+                  print(userId);
+                  context.read<HomeBloc>().add(DeleteAccountRequested(userId:userId!));
+                },
+                child: const SizedBox(
+                    width: double.infinity,
+                    child: custombutton(
+                      text: "Delete",
+                      buttoncolor1: Color.fromARGB(255, 250, 226, 11),
+                      buttoncolor2: Color.fromARGB(255, 250, 226, 11),
+                    )),
+              ),
+              const SizedBox(height: 16),
+              const SizedBox(
+                  width: double.infinity, child: custombutton(text: "Go Back")),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:zoober_user_ride/core/constants/colors.dart';
 import 'package:zoober_user_ride/core/constants/mediaquery.dart';
+import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/rideinsurancefaq.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/ridersafteyfaq.dart';
 
 import '../../../../core/constants/routing.dart';
 
-class HelpPage extends StatelessWidget {
+class HelpPage extends StatefulWidget {
   @override
+  State<HelpPage> createState() => _HelpPageState();
+}
+
+class _HelpPageState extends State<HelpPage> {
+  String? name;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  void _loadUserName() async {
+    String? fetchedName = await SecureStorage.getValue('name');
+    setState(() {
+      name = fetchedName;
+    });
+  }
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     //final double screenHeight = MediaQuery.of(context).size.height;
@@ -30,7 +49,7 @@ class HelpPage extends StatelessWidget {
                     "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg"), // Replace with actual image asset
               ),
               title: Text(
-                'Lokesh waran',
+                  (name ?? '').toUpperCase(),
                 style: TextStyle(fontSize: screenWidth * 0.05),
               ),
               trailing: Icon(Icons.arrow_forward_ios),

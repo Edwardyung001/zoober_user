@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
@@ -35,19 +36,21 @@ class _LoginScreenState extends State<LoginScreen> {
       body:BlocListener<AuthBloc, AuthState>(
         listener: (context, state) async{
           if (state is AuthLoading) {
-            // Show loading snackbar or indicator
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Signing up...")),
-            );
+
+       print('loading');
           } else if (state is LoginSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(content: Text(state.message),backgroundColor: Colors.green,),
             );
             await SecureStorage.saveValue('token', state.token);
             await SecureStorage.saveValue('name', state.name);
             await SecureStorage.saveValue('userId', state.userId.toString());
             navigateTo(context, HomeScreen());
-          } else if (state is AuthFailure) {
+          } else if(state is LoginFailed){
+
+          }
+
+          else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: ${state.error}")),
             );
@@ -70,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(
                             height: mediaQuery.height * 0.02,
                             child: Image.asset(
-                              'Assets/screenLogo.png',
+                              'Assets/logo2.jpg',
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -106,11 +109,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
 
-                      SizedBox(height: mediaQuery.height * 0.02), // Spacer
+                      SizedBox(height: mediaQuery.height * 0.02),
+                      // Spacer
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      return Column(
+                        children: [
+                          if (state is LoginFailed)
+                            Text(
+                              state.errorMessage,
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          // Your form widgets here
+                        ],
+                      );
+                    },
+                  ),
+                      SizedBox(height: mediaQuery.height * 0.02),
 
                       // Phone Number Input Field
                       TextField(
                         controller: phoneController,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius:
@@ -124,6 +146,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextField(
                         controller: passwordController,
                         obscureText: _obscureText,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(mediaQuery.width * 0.02),
@@ -140,7 +165,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             },
                           ),
+
                         ),
+
                       ),
                       SizedBox(height: mediaQuery.height * 0.05), // Spacer
 

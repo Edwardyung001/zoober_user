@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:zoober_user_ride/core/constants/colors.dart';
 import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
@@ -12,6 +15,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
   @override
   void initState() {
     super.initState();
@@ -25,6 +30,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -64,8 +78,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     SizedBox(height: screenHeight * 0.02),
                     CircleAvatar(
                       radius: profileImageSize / 2,
-                      backgroundImage: NetworkImage(
-                          "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg"),
+                      backgroundImage: _selectedImage != null
+                          ? FileImage(_selectedImage!) as ImageProvider
+                          : NetworkImage(
+                        "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg",
+                      ),
                     ),
                     SizedBox(height: screenHeight * 0.01),
                     Text(
@@ -74,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: _pickImage,
                       child: Text(
                         'Upload photo',
                         style: TextStyle(
@@ -243,7 +260,8 @@ class EditNameBottomSheet extends StatelessWidget {
     return BlocListener<HomeBloc, HomeState>(
       listener: (context, state) async {
         if (state is HomeLoading) {
-          // Show loading snackbar or indicator
+          print('loading');
+
 
         } else if (state is UpdateProfileSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -253,6 +271,8 @@ class EditNameBottomSheet extends StatelessWidget {
           context
               .read<HomeBloc>()
               .add(FetchingProfileRequested(userId: userId!));
+          Navigator.pop(context); // close bottom sheet
+
         } else if (state is HomeFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Error: ${state.error}")),
@@ -321,7 +341,6 @@ class EditNameBottomSheet extends StatelessWidget {
                           lastName: lastName,
                           userId: userId!,
                         ));
-                        Navigator.pop(context); // close bottom sheet
                       },
                       child: custombutton(text: "Save Changes"))),
               const SizedBox(height: 16),
@@ -340,6 +359,7 @@ class EditNoBottomSheet extends StatelessWidget {
     return BlocListener<HomeBloc, HomeState>(
       listener: (context, state) async {
         if (state is HomeLoading) {
+          print('loading');
 
         } else if (state is UpdateProfileSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -349,6 +369,8 @@ class EditNoBottomSheet extends StatelessWidget {
           context
               .read<HomeBloc>()
               .add(FetchingProfileRequested(userId: userId!));
+          Navigator.pop(context); // close bottom sheet
+
         } else if (state is HomeFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Error: ${state.error}")),
@@ -400,8 +422,6 @@ class EditNoBottomSheet extends StatelessWidget {
                           userId: userId!,
                           mobile: phoneNumber,
                         ));
-                        Navigator.pop(context); // close bottom sheet
-
                       },
                       child: custombutton(text: "Save Changes"))),
               const SizedBox(height: 16),
@@ -483,7 +503,6 @@ class EditEmailBottomSheet extends StatelessWidget {
                           userId: userId!,
                           email: email,
                         ));
-                        Navigator.pop(context); // close bottom sheet
 
                       },
                       child: custombutton(text: "Save Changes"))),
@@ -512,7 +531,6 @@ class _EditGenderState extends State<EditGender> {
         userId: userId,
         gender: selectedGender!,
       ));
-      Navigator.pop(context); // close bottom sheet
 
     }
   }
@@ -531,6 +549,8 @@ class _EditGenderState extends State<EditGender> {
           context
               .read<HomeBloc>()
               .add(FetchingProfileRequested(userId: userId!));
+          Navigator.pop(context); // close bottom sheet
+
         } else if (state is HomeFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Error: ${state.error}")),

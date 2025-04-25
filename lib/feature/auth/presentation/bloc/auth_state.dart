@@ -20,6 +20,11 @@ class LoginSuccess extends AuthState {
   LoginSuccess(this.message,this.name,this.token,this.userId);
 }
 
+class LoginFailed extends AuthState {
+  final String errorMessage;
+  LoginFailed(this.errorMessage);
+}
+
 
 class AuthFailure extends AuthState {
   final String error;

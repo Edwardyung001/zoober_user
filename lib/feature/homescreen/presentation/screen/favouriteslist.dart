@@ -4,6 +4,7 @@ import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/bloc/home_bloc.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/favourites.dart';
+import 'package:zoober_user_ride/feature/homescreen/presentation/screen/settings.dart';
 import '../../../../core/constants/routing.dart';
 
 
@@ -32,6 +33,13 @@ class _FavoritesListScreenState extends State<FavoritesListScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text('Favourites'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            // Navigate to FavoritesListScreen and remove current screen from stack
+            navigateTo(context, SettingsPage());
+          },
+        ),
       ),
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {

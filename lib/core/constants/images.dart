@@ -1,4 +1,4 @@
-const Applogo = "./Assets/Logo.png";
+const Applogo = "./Assets/logo2.jpg";
 const skipper1 = "./Assets/skipper1.png";
 const skipper2 = "./Assets/skipper2.png";
 const skipper3 = "./Assets/skipper3.png";

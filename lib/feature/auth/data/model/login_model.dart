@@ -14,13 +14,28 @@ class LoginModel {
   });
 
   factory LoginModel.fromJson(Map<String, dynamic> json) {
-    return LoginModel(
-      success: json['success']??false ,
-      message: json['message'],
-      name: json['user']['firstName'],
-      token: json['token'],
-      userId: json['user']['id'],
+    final bool success = json['success'] ?? false;
+    final String message = json['message'] ?? '';
 
+    if (!success) {
+      // Return with only success and message
+      return LoginModel(
+        success: success,
+        message: message,
+        name: '',
+        token: '',
+        userId: 0,
+      );
+    }
+
+    // When success is true, parse full data
+    final user = json['user'];
+    return LoginModel(
+      success: success,
+      message: message,
+      name: user != null ? user['firstName'] ?? '' : '',
+      token: json['token'] ?? '',
+      userId: user != null ? user['id'] ?? 0 : 0,
     );
   }
 }

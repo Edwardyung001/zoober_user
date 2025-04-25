@@ -15,19 +15,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
       try {
         final response = await signupUseCase(event.email,event.mobileNumber, event.firstName,event.lastName,event.gender,event.dob,event.password);
-        emit(SignupSuccess(response.message));
+        if(response.success) {
+          emit(SignupSuccess(response.message));
+        }
+      else{
+      emit(LoginFailed(response.message));
+      }
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
     });
+
+
     on<LoginRequested>((event, emit) async {
       emit(AuthLoading());
       try {
         final response = await loginUseCase(event.phoneNumber,event.password);
-        emit(LoginSuccess(response.message,response.name,response.token,response.userId));
+        if(response.success){
+          emit(LoginSuccess(response.message,response.name,response.token,response.userId));
+        }
+        else{
+          emit(LoginFailed(response.message));
+        }
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
     });
+
   }
 }
