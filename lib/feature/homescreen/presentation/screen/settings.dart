@@ -1,13 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zoober_user_ride/core/constants/colors.dart';
 import 'package:zoober_user_ride/core/constants/mediaquery.dart';
 import 'package:zoober_user_ride/core/constants/routing.dart';
+import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
+import 'package:zoober_user_ride/feature/auth/presentation/screen/login.dart';
+import 'package:zoober_user_ride/feature/homescreen/presentation/screen/bloc/home_bloc.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/profilescreen.dart';
 import 'favouriteslist.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  String? name;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  void _loadUserName() async {
+    String? fetchedName = await SecureStorage.getValue('name');
+    setState(() {
+      name = fetchedName;
+    });
+  }
+  Future<void> _clearAllAndLogout(BuildContext context) async {
+    await SecureStorage.clearAll(); // Clear all data from secure storage
+    print('🔒 SecureStorage cleared!');
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+    // Or use the specific route for your logout screen
+  }
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     //final double screenHeight = MediaQuery.of(context).size.height;
@@ -29,8 +61,8 @@ class SettingsPage extends StatelessWidget {
                     "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg"), // Replace with actual image asset
               ),
               title: Text(
-                'Lokesh waran',
-                style: TextStyle(fontSize: screenWidth * 0.05),
+                (name ?? '').toUpperCase(),
+                style: TextStyle(fontSize: screenWidth * 0.05),overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(
                 'Gold Member',
@@ -66,8 +98,15 @@ class SettingsPage extends StatelessWidget {
                 context, Icons.privacy_tip, 'About', Color(0xff8F8E94)),
             Divider(color: Color.fromARGB(255, 228, 228, 228)),
 
-            _buildSettingsItem(context, Icons.logout_outlined, 'Logout',
-                Color.fromARGB(255, 238, 217, 33)),
+            InkWell(
+              onTap: () async {
+                // Clear all data from secure storage
+                await _clearAllAndLogout(context);
+              },
+
+              child: _buildSettingsItem(context, Icons.logout_outlined, 'Logout',
+                  Color.fromARGB(255, 238, 217, 33)),
+            ),
             Divider(color: Color.fromARGB(255, 228, 228, 228)),
             InkWell(
               onTap: () {
@@ -87,8 +126,14 @@ class SettingsPage extends StatelessWidget {
                   },
                 );
               },
-              child: _buildSettingsItem(context, Icons.delete_outline,
-                  'Delete Account', Color(0xffFF2D55)),
+              child: InkWell(
+                onTap: () async {
+                  String? userId = await SecureStorage.getValue('userId');
+                  context.read<HomeBloc>().add(DeleteAccountRequested(userId:userId!));
+                },
+                child: _buildSettingsItem(context, Icons.delete_outline,
+                    'Delete Account', Color(0xffFF2D55)),
+              ),
             ),
             Divider(color: Color.fromARGB(255, 228, 228, 228)),
           ],

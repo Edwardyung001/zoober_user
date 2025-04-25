@@ -44,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
               SnackBar(content: Text(state.message)),
             );
             await SecureStorage.saveValue('token', state.token);
+            await SecureStorage.saveValue('name', state.name);
             await SecureStorage.saveValue('userId', state.userId.toString());
             navigateTo(context, HomeScreen());
           } else if (state is AuthFailure) {

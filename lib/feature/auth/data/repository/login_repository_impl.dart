@@ -13,7 +13,7 @@ class LoginRepositoryImpl implements LoginRepository {
   @override
   Future<LoginEntity> login( String phoneNumber,String password) async {
     final LoginModel loginModel = await loginDatasource.login(phoneNumber,password);
-    return LoginEntity(success: loginModel.success, message: loginModel.message,token: loginModel.token,userId: loginModel.userId);
+    return LoginEntity(success: loginModel.success, message: loginModel.message,name: loginModel.name,token: loginModel.token,userId: loginModel.userId);
 
   }
 }

@@ -10,8 +10,8 @@ class FavouriteModel{
 
   factory FavouriteModel.fromJson(Map<String, dynamic> json) {
     return FavouriteModel(
-        status: json['status'] == true,
-        message: json['data']['message'],
+        status: json['success'] == true,
+        message: json['message'],
         );
   }
 }

@@ -1,12 +1,14 @@
 class LoginModel {
   final bool success;
   final String message;
+  final String name;
   final String token;
   final int userId;
 
   LoginModel({
     required this.success,
     required this.message,
+    required this.name,
     required this.token,
     required this.userId,
   });
@@ -15,6 +17,7 @@ class LoginModel {
     return LoginModel(
       success: json['success']??false ,
       message: json['message'],
+      name: json['user']['firstName'],
       token: json['token'],
       userId: json['user']['id'],
 

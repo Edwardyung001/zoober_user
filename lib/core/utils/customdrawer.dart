@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/feature/auth/presentation/screen/login.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/helpscreen.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/notifications.dart';
@@ -10,19 +11,50 @@ import 'package:zoober_user_ride/feature/homescreen/presentation/screen/settings
 import '../constants/colors.dart';
 import '../constants/routing.dart';
 
-class CustomDrawer extends StatelessWidget {
-  final String userName;
+class CustomDrawer extends StatefulWidget {
   final String? profileImageUrl; // Optional profile image URL
   final VoidCallback onDrawerClose;
 
   CustomDrawer({
-    required this.userName,
     this.profileImageUrl,
     required this.onDrawerClose,
   });
 
   @override
+  State<CustomDrawer> createState() => _CustomDrawerState();
+}
+
+class _CustomDrawerState extends State<CustomDrawer> {
+  String? name;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  void _loadUserName() async {
+    String? fetchedName = await SecureStorage.getValue('name');
+    setState(() {
+      name = fetchedName;
+    });
+  }
+
+  Future<void> _clearAllAndLogout(BuildContext context) async {
+    await SecureStorage.clearAll(); // Clear all data from secure storage
+    print('🔒 SecureStorage cleared!');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+
+    // Redirect to the LogoutScreen
+     // Or use the specific route for your logout screen
+  }
+
+
   Widget build(BuildContext context) {
+
     return Drawer(
       backgroundColor: white,
       child: Column(
@@ -39,7 +71,7 @@ class CustomDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
+                Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     children: [
@@ -51,11 +83,11 @@ class CustomDrawer extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       Text(
-                        'Lokesh waran',
+                        (name ?? '').toUpperCase(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.bold,overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -131,8 +163,9 @@ class CustomDrawer extends StatelessWidget {
                 _buildDrawerItem(
                   icon: Icons.logout,
                   text: 'Logout',
-                  onTap: () {
-                    navigateTo(context, LoginScreen());
+                  onTap: () async {
+                    await _clearAllAndLogout(context);
+
                   },
                 ),
               ],

@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/data/model/suggestion_model.dart';
+import 'package:zoober_user_ride/feature/homescreen/presentation/domain/usecase/delete_account_usecase.dart';
+import 'package:zoober_user_ride/feature/homescreen/presentation/domain/usecase/delete_favourite_usecase.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/domain/usecase/favourite_usecase.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/domain/usecase/fetching_favourite_usecase.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/domain/usecase/fetching_profile_usecase.dart';
@@ -14,9 +16,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final FetchingProfileUseCase fetchingProfileUseCase;
   final FetchingFavouriteUseCase fetchingFavouriteUseCase;
   final FetchSuggestionsUseCase fetchSuggestionsUseCase;
+  final DeleteFavouriteUseCase deleteFavouriteUseCase;
+  final DeleteAccountUseCase deleteAccountUseCase;
 
   HomeBloc(this.favouriteUseCase, this.updateProfileUseCase,
-      this.fetchingProfileUseCase, this.fetchingFavouriteUseCase,this.fetchSuggestionsUseCase)
+      this.fetchingProfileUseCase, this.fetchingFavouriteUseCase,this.fetchSuggestionsUseCase,this.deleteFavouriteUseCase,this.deleteAccountUseCase)
       : super(HomeInitial()) {
 
 
@@ -32,6 +36,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeFailure(e.toString()));
       }
     });
+
+
     on<FirstProfileRequested>((event, emit) async {
       emit(HomeLoading());
       try {
@@ -59,6 +65,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeFailure(e.toString()));
       }
     });
+
+
+
     on<EmailProfileRequested>((event, emit) async {
       emit(HomeLoading());
       try {
@@ -72,6 +81,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(HomeFailure(e.toString()));
       }
     });
+
+
+
     on<GenderProfileRequested>((event, emit) async {
       emit(HomeLoading());
       try {
@@ -104,6 +116,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
         // Convert List<FavouriteItem> to List<Map<String, dynamic>>
         final favouriteList = response.favouriteList.map((item) => {
+          'id':item.id,
           'title': item.title,
           'description': item.description,
           'deleted_at': item.deletedAt,
@@ -133,6 +146,35 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
 
 
+    on<DeleteFavouriteRequested>((event, emit) async {
+      emit(HomeLoading()); // Show loading indicator while deleting
+      try {
+        // Call the delete use case with the favourite id
+        final response = await deleteFavouriteUseCase(
+          event.id,
+        );
+        // Emit success state with a message
+        emit(DeleteFavouriteSuccess(response.message)); // You can customize the response as needed
+      } catch (e) {
+        // If there is an error, emit failure state with error message
+        emit(HomeFailure(e.toString()));
+      }
+    });
+
+    on<DeleteAccountRequested>((event, emit) async {
+      emit(HomeLoading()); // Show loading indicator while deleting
+      try {
+        // Call the delete use case with the favourite id
+        final response = await deleteAccountUseCase(
+          event.userId,
+        );
+        // Emit success state with a message
+        emit(DeleteAccountSuccess(response.message)); // You can customize the response as needed
+      } catch (e) {
+        // If there is an error, emit failure state with error message
+        emit(HomeFailure(e.toString()));
+      }
+    });
 
 
   }

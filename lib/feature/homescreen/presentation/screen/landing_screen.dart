@@ -5,6 +5,7 @@ import 'package:location/location.dart';
 import 'package:location/location.dart' as loc;
 import 'package:zoober_user_ride/core/constants/colors.dart';
 import 'package:zoober_user_ride/core/constants/routing.dart';
+import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/core/utils/customdrawer.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/bloc/home_bloc.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/where_are_you_go_screen.dart';
@@ -66,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     context.read<HomeBloc>().add(FetchingSuggestionRequested());
   }
+
   @override
   Widget build(BuildContext context) {
     // Fetch screen dimensions
@@ -86,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       key: _scaffoldKey,
       drawer: CustomDrawer(
-        userName: "Lokesh Waran",
         onDrawerClose: () {
           Navigator.pop(context);
         },
@@ -234,9 +235,7 @@ Widget _buildVehicle(BuildContext context, double screenHeight, double screenWid
     child: BlocListener<HomeBloc, HomeState>(
       listener: (context, state) async {
         if (state is HomeLoading) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Signing up...")),
-          );
+
         } else if (state is FetchingSuggestionSuccess) {
           print(state.suggestionList);
         } else if (state is HomeFailure) {

@@ -1,9 +1,11 @@
 class FavouriteItem {
+  final int id;
   final String title;
   final String description;
   final String? deletedAt;
 
   FavouriteItem({
+    required this.id,
     required this.title,
     required this.description,
     this.deletedAt,
@@ -11,6 +13,7 @@ class FavouriteItem {
 
   factory FavouriteItem.fromJson(Map<String, dynamic> json) {
     return FavouriteItem(
+      id: json['id'] ?? 0,
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       deletedAt: json['deleted_at'],

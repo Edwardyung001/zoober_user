@@ -59,6 +59,26 @@ class MobileProfileRequested extends HomeEvent {
   });
 }
 
+
+class DeleteFavouriteRequested extends HomeEvent {
+  final int id;
+
+  DeleteFavouriteRequested({
+    required this.id,
+  });
+}
+
+
+class DeleteAccountRequested extends HomeEvent {
+  final String userId;
+
+  DeleteAccountRequested({
+    required this.userId,
+  });
+}
+
+
+
 class GenderProfileRequested extends HomeEvent {
   final String userId;
 

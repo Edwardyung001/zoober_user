@@ -24,7 +24,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
       try {
         final response = await loginUseCase(event.phoneNumber,event.password);
-        emit(LoginSuccess(response.message,response.token,response.userId));
+        emit(LoginSuccess(response.message,response.name,response.token,response.userId));
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }

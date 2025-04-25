@@ -1,5 +1,3 @@
-
-
 import 'package:zoober_user_ride/core/network/api_connection.dart';
 import 'package:zoober_user_ride/core/network/api_routes.dart';
 import 'package:zoober_user_ride/core/storage/local_storage.dart';
@@ -11,16 +9,21 @@ class FavouriteDatasource {
   FavouriteDatasource(this.dioClient);
 
   //post method
-  Future<FavouriteModel> favouriteList(String title,String description) async {
+  Future<FavouriteModel> favouriteList(String title, String description) async {
     String? token = await SecureStorage.getValue('token');
-
-    final response = await dioClient.post(ApiRoutes.favouriteList, {
+    String? userId = await SecureStorage.getValue('userId');
+    final inputData = {
+      'userId': userId,
       'title': title,
       'description': description,
-    }, headers: {
-      'Authorization': 'Bearer $token',
-    });
+    };
+    print(inputData);
+    final response = await dioClient.post(
+      ApiRoutes.favouriteList,
+      {'userId': userId, 'title': title, 'description': description},
+      headers: {'Authorization': 'Bearer $token'},
+    );
     print(response.data);
     return FavouriteModel.fromJson(response.data);
-    }
+  }
 }
