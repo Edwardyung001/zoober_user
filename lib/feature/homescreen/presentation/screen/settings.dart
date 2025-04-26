@@ -7,6 +7,7 @@ import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
 import 'package:zoober_user_ride/feature/auth/presentation/screen/login.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/bloc/home_bloc.dart';
+import 'package:zoober_user_ride/feature/homescreen/presentation/screen/landing_screen.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/profilescreen.dart';
 import 'favouriteslist.dart';
 
@@ -31,14 +32,12 @@ class _SettingsPageState extends State<SettingsPage> {
     });
   }
   Future<void> _clearAllAndLogout(BuildContext context) async {
-    await SecureStorage.clearAll(); // Clear all data from secure storage
+    await SecureStorage.clearAll();
     print('🔒 SecureStorage cleared!');
-
-    Navigator.pushReplacement(
-      context,
+    Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => LoginScreen()),
+          (Route<dynamic> route) => false,
     );
-    // Or use the specific route for your logout screen
   }
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -49,6 +48,13 @@ class _SettingsPageState extends State<SettingsPage> {
         backgroundColor: Colors.white,
         title: Text('Settings'),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            // Navigate to FavoritesListScreen and remove current screen from stack
+            navigateTo(context, HomeScreen());
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -100,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
             InkWell(
               onTap: () async {
-                // Clear all data from secure storage
+
                 await _clearAllAndLogout(context);
               },
 
@@ -164,7 +170,7 @@ class _SettingsPageState extends State<SettingsPage> {
       //   } else if (title == "Document Management") {
       //     navigateTo(context, DocumentManagementPage());
       //   }
-      //},
+      // },
     );
   }
 }

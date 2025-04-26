@@ -52,6 +52,8 @@ class _WhereAreYouGoScreenTwoState extends State<WhereAreYouGoScreenTwo> {
     final mediaQuery = MediaQuery.of(context);
     final screenHeight = mediaQuery.size.height;
     final screenWidth = mediaQuery.size.width;
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -294,19 +296,18 @@ class _WhereAreYouGoScreenTwoState extends State<WhereAreYouGoScreenTwo> {
                 ],
               ),
             ),
+            if (keyboardHeight == 0)
             Center(
               child: SizedBox(
-                child: InkWell(
-                  onTap: () {
-                    navigateTo(context, StartRide());
-                  },
-                  child: SizedBox(
-                      height:screenHeight * 0.1,
-                      width:screenWidth * 0.3,
-                      child: custombutton(
-                          text: "Start Riding")),
-                ),
-              ),
+                  height:screenHeight * 0.1,
+                  width:screenWidth * 0.3,
+                  child: InkWell(
+                    onTap: () {
+                      navigateTo(context, StartRide());
+                    },
+                    child: custombutton(
+                        text: "Start Riding"),
+                  )),
             )
           ],
         ),

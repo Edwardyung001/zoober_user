@@ -50,6 +50,7 @@ class _WhereAreYouGoScreenState extends State<WhereAreYouGoScreen> {
     final mediaQuery = MediaQuery.of(context);
     final screenHeight = mediaQuery.size.height;
     final screenWidth = mediaQuery.size.width;
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
 
     return Scaffold(
       appBar: AppBar(
@@ -249,6 +250,7 @@ class _WhereAreYouGoScreenState extends State<WhereAreYouGoScreen> {
                 ),
               ),
             ),
+
             // Pickup Suggestion Cards
             Expanded(
               child: ListView(
@@ -288,20 +290,19 @@ class _WhereAreYouGoScreenState extends State<WhereAreYouGoScreen> {
                 ],
               ),
             ),
+            if (keyboardHeight == 0)
             Center(
               child: SizedBox(
-                child: InkWell(
-                  onTap: () {
-                    navigateTo(context, StartRide());
+                  height:screenHeight * 0.1,
+                  width:screenWidth * 0.3,
+                  child: InkWell(
+                    onTap: () {
+                  navigateTo(context, StartRide());
                   },
-                  child: SizedBox(
-                      height:screenHeight * 0.1,
-                      width:screenWidth * 0.3,
-                      child: custombutton(
-                          text: "Start Riding")),
-                ),
-              ),
-            )
+                  child: custombutton(
+                        text: "Start Riding"),
+                  )),
+            ),
           ],
         ),
       ),

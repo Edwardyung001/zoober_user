@@ -41,15 +41,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   Future<void> _clearAllAndLogout(BuildContext context) async {
-    await SecureStorage.clearAll(); // Clear all data from secure storage
+    await SecureStorage.clearAll();
     print('🔒 SecureStorage cleared!');
-    Navigator.pushReplacement(
-      context,
+    Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => LoginScreen()),
+          (Route<dynamic> route) => false,
     );
 
-    // Redirect to the LogoutScreen
-     // Or use the specific route for your logout screen
   }
 
 

@@ -68,6 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Center(child: CircularProgressIndicator());
           } else if (state is FetchingProfileSuccess) {
             final userDetails = state.userDetails;
+
             print(userDetails);
             return SingleChildScrollView(
               child: Padding(
@@ -267,6 +268,7 @@ class EditNameBottomSheet extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message)),
           );
+          await SecureStorage.saveValue('name', firstNameController.text);
           final userId = await SecureStorage.getValue('userId');
           context
               .read<HomeBloc>()
@@ -280,71 +282,78 @@ class EditNameBottomSheet extends StatelessWidget {
           print("Error: ${state.error}");
         }
       },
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          color: white,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Divider(
-                color: Colors.grey,
-                thickness: 3,
-                indent: MediaQuery.of(context).size.width * 0.4,
-                endIndent: MediaQuery.of(context).size.width * 0.4,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Edit Name',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: firstNameController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person_outline),
-                  labelText: 'First Name',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {},
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+          child: Container(
+            color: white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Divider(
+                  color: Colors.grey,
+                  thickness: 3,
+                  indent: MediaQuery.of(context).size.width * 0.4,
+                  endIndent: MediaQuery.of(context).size.width * 0.4,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Edit Name',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: firstNameController,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.person_outline),
+                    labelText: 'First Name',
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {},
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: lastNameController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.person_outline),
-                  labelText: 'Last Name',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {},
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: lastNameController,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.person_outline),
+                    labelText: 'Last Name',
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {},
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                  width: double.infinity,
-                  child: InkWell(
-                      onTap: () async {
-                        final firstName = firstNameController.text.trim();
-                        final lastName = lastNameController.text.trim();
-                        String? userId = await SecureStorage.getValue('userId');
-                        context.read<HomeBloc>().add(FirstProfileRequested(
-                          firstName: firstName,
-                          lastName: lastName,
-                          userId: userId!,
-                        ));
-                      },
-                      child: custombutton(text: "Save Changes"))),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+                SizedBox(
+                    width: double.infinity,
+                    child: InkWell(
+                        onTap: () async {
+                          final firstName = firstNameController.text.trim();
+                          final lastName = lastNameController.text.trim();
+                          String? userId = await SecureStorage.getValue('userId');
+                          context.read<HomeBloc>().add(FirstProfileRequested(
+                            firstName: firstName,
+                            lastName: lastName,
+                            userId: userId!,
+                          ));
+                        },
+                        child: custombutton(text: "Save Changes"))),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
@@ -378,54 +387,61 @@ class EditNoBottomSheet extends StatelessWidget {
           print("Error: ${state.error}");
         }
       },
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          color: white,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Divider(
-                color: Colors.grey,
-                thickness: 3,
-                indent: MediaQuery.of(context).size.width * 0.4,
-                endIndent: MediaQuery.of(context).size.width * 0.4,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Edit Phone number',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: phoneNumberController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.phone),
-                  labelText: 'New Phone Number',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {},
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+          child: Container(
+            color: white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Divider(
+                  color: Colors.grey,
+                  thickness: 3,
+                  indent: MediaQuery.of(context).size.width * 0.4,
+                  endIndent: MediaQuery.of(context).size.width * 0.4,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Edit Phone number',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: phoneNumberController,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.phone),
+                    labelText: 'New Phone Number',
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {},
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                  width: double.infinity,
-                  child: InkWell(
-                      onTap: () async {
-                        final phoneNumber = phoneNumberController.text.trim();
-                        String? userId = await SecureStorage.getValue('userId');
-                        context.read<HomeBloc>().add(MobileProfileRequested(
-                          userId: userId!,
-                          mobile: phoneNumber,
-                        ));
-                      },
-                      child: custombutton(text: "Save Changes"))),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+                SizedBox(
+                    width: double.infinity,
+                    child: InkWell(
+                        onTap: () async {
+                          final phoneNumber = phoneNumberController.text.trim();
+                          String? userId = await SecureStorage.getValue('userId');
+                          context.read<HomeBloc>().add(MobileProfileRequested(
+                            userId: userId!,
+                            mobile: phoneNumber,
+                          ));
+                        },
+                        child: custombutton(text: "Save Changes"))),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
@@ -459,55 +475,62 @@ class EditEmailBottomSheet extends StatelessWidget {
           print("Error: ${state.error}");
         }
       },
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Container(
-          color: white,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Divider(
-                color: Colors.grey,
-                thickness: 3,
-                indent: MediaQuery.of(context).size.width * 0.4,
-                endIndent: MediaQuery.of(context).size.width * 0.4,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Edit Email ID',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.phone),
-                  labelText: 'New Email ID',
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {},
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+          child: Container(
+            color: white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Divider(
+                  color: Colors.grey,
+                  thickness: 3,
+                  indent: MediaQuery.of(context).size.width * 0.4,
+                  endIndent: MediaQuery.of(context).size.width * 0.4,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Edit Email ID',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.phone),
+                    labelText: 'New Email ID',
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {},
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                  width: double.infinity,
-                  child: InkWell(
-                      onTap: () async {
-                        final email = emailController.text.trim();
-                        String? userId = await SecureStorage.getValue('userId');
-                        context.read<HomeBloc>().add(EmailProfileRequested(
-                          userId: userId!,
-                          email: email,
-                        ));
+                const SizedBox(height: 16),
+                SizedBox(
+                    width: double.infinity,
+                    child: InkWell(
+                        onTap: () async {
+                          final email = emailController.text.trim();
+                          String? userId = await SecureStorage.getValue('userId');
+                          context.read<HomeBloc>().add(EmailProfileRequested(
+                            userId: userId!,
+                            email: email,
+                          ));
 
-                      },
-                      child: custombutton(text: "Save Changes"))),
-              const SizedBox(height: 16),
-            ],
+                        },
+                        child: custombutton(text: "Save Changes"))),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         ),
       ),
