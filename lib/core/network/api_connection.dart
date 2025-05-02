@@ -11,7 +11,7 @@ class DioClient {
 
   }
 
-  Future<Response> post(String endpoint, Map<String, dynamic> data,
+  Future<Response> post(String endpoint, dynamic data,
       {Map<String, String>? headers}) async {
     try {
       final response = await dio.post(

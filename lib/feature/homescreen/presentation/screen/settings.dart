@@ -30,15 +30,21 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       name = fetchedName;
     });
+    final userId = await SecureStorage.getValue('userId');
+    if (userId != null) {
+      context.read<HomeBloc>().add(FetchingProfileRequested(userId: userId));
+    }
   }
+
   Future<void> _clearAllAndLogout(BuildContext context) async {
     await SecureStorage.clearAll();
     print('🔒 SecureStorage cleared!');
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => LoginScreen()),
-          (Route<dynamic> route) => false,
+      (Route<dynamic> route) => false,
     );
   }
+
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     //final double screenHeight = MediaQuery.of(context).size.height;
@@ -56,113 +62,141 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Profile Section
-            ListTile(
-              leading: CircleAvatar(
-                radius: profileImageSize / 2,
-                backgroundImage: NetworkImage(
-                    "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg"), // Replace with actual image asset
-              ),
-              title: Text(
-                (name ?? '').toUpperCase(),
-                style: TextStyle(fontSize: screenWidth * 0.05),overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(
-                'Gold Member',
-                style: TextStyle(fontSize: screenWidth * 0.035),
-              ),
-              trailing: Icon(Icons.arrow_forward_ios),
-            ),
-            Divider(),
-            SizedBox(
-              height: height(0.028, context),
-            ),
-            InkWell(
-              onTap: () {
-                navigateTo(context, ProfileScreen());
-              },
-              child: _buildSettingsItem(
-                  context, Icons.person_outline, 'Profile', Color(0xffFF9500)),
-            ),
-            Divider(
-              color: const Color.fromARGB(255, 228, 228, 228),
-            ),
+      body: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          if (state is FetchingProfileSuccess) {
+            final userDetails = state.userDetails;
 
-            InkWell(
-              onTap: () {
-                navigateTo(context, FavoritesListScreen());
-              },
-              child: _buildSettingsItem(context, Icons.favorite_border_outlined,
-                  'Favourite', Color(0xff4CD964)),
-            ),
-            Divider(color: Color.fromARGB(255, 228, 228, 228)),
-
-            _buildSettingsItem(
-                context, Icons.privacy_tip, 'About', Color(0xff8F8E94)),
-            Divider(color: Color.fromARGB(255, 228, 228, 228)),
-
-            InkWell(
-              onTap: () async {
-
-                await _clearAllAndLogout(context);
-              },
-
-              child: _buildSettingsItem(context, Icons.logout_outlined, 'Logout',
-                  Color.fromARGB(255, 238, 217, 33)),
-            ),
-            Divider(color: Color.fromARGB(255, 228, 228, 228)),
-            InkWell(
-              onTap: () {
-                showModalBottomSheet(
-                  backgroundColor: white,
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(16)),
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Profile Section
+                  ListTile(
+                    leading: CircleAvatar(
+                      radius: profileImageSize / 2,
+                      backgroundImage: NetworkImage(
+                        userDetails[0]['profile']?.isNotEmpty == true
+                            ? userDetails[0]['profile']
+                            : "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg",
+                      ),
+                    ),
+                    title: Text(
+                      (name ?? '').toUpperCase(),
+                      style: TextStyle(fontSize: screenWidth * 0.05),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(
+                      'Gold Member',
+                      style: TextStyle(fontSize: screenWidth * 0.035),
+                    ),
+                    trailing: Icon(Icons.arrow_forward_ios),
                   ),
-                  builder: (BuildContext context) {
-                    return Padding(
-                      padding: MediaQuery.of(context).viewInsets,
-                      child: DeleteAccount(),
-                    );
-                  },
-                );
-              },
-              child: _buildSettingsItem(context, Icons.delete_outline,
-                  'Delete Account', Color(0xffFF2D55)),
-            ),
-            Divider(color: Color.fromARGB(255, 228, 228, 228)),
-          ],
-        ),
+                  Divider(),
+                  SizedBox(height: height(0.028, context)),
+                  InkWell(
+                    onTap: () {
+                      navigateTo(context, ProfileScreen());
+                    },
+                    child: _buildSettingsItem(
+                      context,
+                      Icons.person_outline,
+                      'Profile',
+                      Color(0xffFF9500),
+                    ),
+                  ),
+                  Divider(color: const Color.fromARGB(255, 228, 228, 228)),
+
+                  InkWell(
+                    onTap: () {
+                      navigateTo(context, FavoritesListScreen());
+                    },
+                    child: _buildSettingsItem(
+                      context,
+                      Icons.favorite_border_outlined,
+                      'Favourite',
+                      Color(0xff4CD964),
+                    ),
+                  ),
+                  Divider(color: Color.fromARGB(255, 228, 228, 228)),
+
+                  _buildSettingsItem(
+                    context,
+                    Icons.privacy_tip,
+                    'About',
+                    Color(0xff8F8E94),
+                  ),
+                  Divider(color: Color.fromARGB(255, 228, 228, 228)),
+
+                  InkWell(
+                    onTap: () async {
+                      await _clearAllAndLogout(context);
+                    },
+
+                    child: _buildSettingsItem(
+                      context,
+                      Icons.logout_outlined,
+                      'Logout',
+                      Color.fromARGB(255, 238, 217, 33),
+                    ),
+                  ),
+                  Divider(color: Color.fromARGB(255, 228, 228, 228)),
+                  InkWell(
+                    onTap: () {
+                      showModalBottomSheet(
+                        backgroundColor: white,
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(16),
+                          ),
+                        ),
+                        builder: (BuildContext context) {
+                          return Padding(
+                            padding: MediaQuery.of(context).viewInsets,
+                            child: DeleteAccount(),
+                          );
+                        },
+                      );
+                    },
+                    child: _buildSettingsItem(
+                      context,
+                      Icons.delete_outline,
+                      'Delete Account',
+                      Color(0xffFF2D55),
+                    ),
+                  ),
+                  Divider(color: Color.fromARGB(255, 228, 228, 228)),
+                ],
+              ),
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }
 
   Widget _buildSettingsItem(
-      BuildContext context, IconData icon, String title, Color bgcolor) {
+    BuildContext context,
+    IconData icon,
+    String title,
+    Color bgcolor,
+  ) {
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return ListTile(
       leading: Container(
-          decoration: BoxDecoration(
-              color: bgcolor,
-              borderRadius: BorderRadius.circular(height(0.01, context))),
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Icon(
-              icon,
-              size: screenWidth * 0.07,
-              color: white,
-            ),
-          )),
-      title: Text(
-        title,
-        style: TextStyle(fontSize: screenWidth * 0.045),
+        decoration: BoxDecoration(
+          color: bgcolor,
+          borderRadius: BorderRadius.circular(height(0.01, context)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Icon(icon, size: screenWidth * 0.07, color: white),
+        ),
       ),
+      title: Text(title, style: TextStyle(fontSize: screenWidth * 0.045)),
       trailing: Icon(Icons.arrow_forward_ios),
       // onTap: () {
       //   if (title == "Vehicle Management") {
@@ -179,25 +213,25 @@ class DeleteAccount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<HomeBloc, HomeState>(
-      listener: (context, state) async{
+      listener: (context, state) async {
         if (state is HomeLoading) {
-
           print('loading');
         } else if (state is DeleteAccountSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message),backgroundColor: Colors.green,),
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+            ),
           );
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => LoginScreen()),
-                (Route<dynamic> route) => false,
+            (Route<dynamic> route) => false,
           );
-
-        }
-        else if (state is HomeFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Error: ${state.error}")),
-          );
+        } else if (state is HomeFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("Error: ${state.error}")));
           print("Error: ${state.error}");
         }
       },
@@ -228,19 +262,24 @@ class DeleteAccount extends StatelessWidget {
                 onTap: () async {
                   String? userId = await SecureStorage.getValue('userId');
                   print(userId);
-                  context.read<HomeBloc>().add(DeleteAccountRequested(userId:userId!));
+                  context.read<HomeBloc>().add(
+                    DeleteAccountRequested(userId: userId!),
+                  );
                 },
                 child: const SizedBox(
-                    width: double.infinity,
-                    child: custombutton(
-                      text: "Delete",
-                      buttoncolor1: Color.fromARGB(255, 250, 226, 11),
-                      buttoncolor2: Color.fromARGB(255, 250, 226, 11),
-                    )),
+                  width: double.infinity,
+                  child: custombutton(
+                    text: "Delete",
+                    buttoncolor1: Color.fromARGB(255, 250, 226, 11),
+                    buttoncolor2: Color.fromARGB(255, 250, 226, 11),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               const SizedBox(
-                  width: double.infinity, child: custombutton(text: "Go Back")),
+                width: double.infinity,
+                child: custombutton(text: "Go Back"),
+              ),
               const SizedBox(height: 16),
             ],
           ),

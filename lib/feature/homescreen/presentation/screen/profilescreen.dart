@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'dart:typed_data';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +8,7 @@ import 'package:zoober_user_ride/core/constants/colors.dart';
 import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/bloc/home_bloc.dart';
+import 'package:http_parser/http_parser.dart';
 
 
 class ProfileScreen extends StatefulWidget {
@@ -32,20 +34,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 
   Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
       });
+      _uploadImage();
 
-      final userId = await SecureStorage.getValue('userId');
+    }
 
-      if (userId != null) {
-        context.read<HomeBloc>().add(ProfileImageRequested(
-          userId: userId,
-          image: _selectedImage!, // <-- pass the actual File object
-        ));
+  }
+  final Dio _dio = Dio();
+  // Function to upload the image
+  Future<void> _uploadImage() async {
+    if (_selectedImage == null) return;
+
+    String fileName = _selectedImage!.path.split('/').last;
+    final filePath = _selectedImage!.path;
+    final _fileName = filePath.split('/').last;
+    final userId =await SecureStorage.getValue('userId'),
+
+     formData = FormData.fromMap({
+    'userId': userId,
+    'profile': await MultipartFile.fromFile(
+    filePath,
+    filename: fileName, // optional but recommended
+    contentType: MediaType('image', 'jpeg'), // optional, set MIME type
+    ),
+    });
+
+    print(formData);
+    try {
+      final response = await _dio.post('https://zoober.ackrock.com/api/userProfileUpdate', data: formData,options: Options(
+        headers: {
+          'Authorization': 'Bearer ${await SecureStorage.getValue('token')}', // Adding Authorization header
+        },
+      ),);
+
+      if (response.statusCode == 200||response.statusCode==201) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload successful')));
+
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Upload failed')));
+        print('Response status: ${response.statusCode}');
+        print('Response data: ${response.data}');
       }
+    } catch (e) {
+     print(e);
     }
   }
 
