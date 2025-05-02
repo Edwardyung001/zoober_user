@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           SizedBox(
-                            height: mediaQuery.height * 0.02,
+                            height: mediaQuery.height * 0.05,
                             child: Image.asset(
                               'Assets/logo2.jpg',
                               fit: BoxFit.fill,
@@ -131,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextField(
                         controller: phoneController,
                         inputFormatters: [
-                          LengthLimitingTextInputFormatter(10),
+                          LengthLimitingTextInputFormatter(15),
                         ],
                         decoration: InputDecoration(
                           border: OutlineInputBorder(

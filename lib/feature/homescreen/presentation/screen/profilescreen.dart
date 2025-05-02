@@ -37,8 +37,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       setState(() {
         _selectedImage = File(pickedFile.path);
       });
+
+      final userId = await SecureStorage.getValue('userId');
+
+      if (userId != null) {
+        context.read<HomeBloc>().add(ProfileImageRequested(
+          userId: userId,
+          image: _selectedImage!, // <-- pass the actual File object
+        ));
+      }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -69,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           } else if (state is FetchingProfileSuccess) {
             final userDetails = state.userDetails;
 
-            print(userDetails);
+            print( userDetails[0]['profile']);
             return SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.all(screenWidth * 0.05),
@@ -82,9 +92,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       backgroundImage: _selectedImage != null
                           ? FileImage(_selectedImage!) as ImageProvider
                           : NetworkImage(
-                        "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg",
+                        userDetails[0]['profile']?.isNotEmpty == true
+                            ? userDetails[0]['profile']
+                            : "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg",
                       ),
                     ),
+
                     SizedBox(height: screenHeight * 0.01),
                     Text(
                       userDetails[0]['firstname'] ?? '',

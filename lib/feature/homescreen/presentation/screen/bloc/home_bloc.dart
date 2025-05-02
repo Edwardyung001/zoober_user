@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/data/model/suggestion_model.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/domain/usecase/delete_account_usecase.dart';
@@ -74,6 +76,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         final response = await updateProfileUseCase(
           userId: event.userId,
           email: event.email,
+          // You can add more if needed
+        );
+        emit(UpdateProfileSuccess(response.message));
+      } catch (e) {
+        emit(HomeFailure(e.toString()));
+      }
+    });
+
+    on<ProfileImageRequested>((event, emit) async {
+      emit(HomeLoading());
+      try {
+        final response = await updateProfileUseCase(
+          userId: event.userId,
+          image: event.image,
           // You can add more if needed
         );
         emit(UpdateProfileSuccess(response.message));

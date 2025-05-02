@@ -73,11 +73,11 @@ class _SplashscreenState extends State<Splashscreen>
               child: FadeTransition(
                 opacity: _animation,
                 child: Container(
-                  width: width(0.8, context),
-                  height: height(0.05, context),
+                  width: width(0.5, context),
+                  height: height(0.5, context),
                   child: Image.asset(
                     Applogo,
-                    fit: BoxFit.contain,
+                    // fit: BoxFit.contain,
                   ),
                 ),
               ),

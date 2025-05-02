@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:zoober_user_ride/feature/homescreen/presentation/domain/entity/update_profile_entity.dart';
 
 abstract class UpdateProfileRepository {
@@ -9,6 +11,6 @@ abstract class UpdateProfileRepository {
     String? lastname,
     String? gender,
     String? dob,
-    String? image,
+    File? image,
   });
 }

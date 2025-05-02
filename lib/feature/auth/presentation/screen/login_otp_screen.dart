@@ -41,7 +41,7 @@ class _LoginOtpScreenState extends State<LoginOtpScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: mediaQuery.height * 0.03,
+                      height: mediaQuery.height * 0.05,
                       child: Image.asset(
                         'Assets/logo2.jpg',
                         fit: BoxFit.fill,

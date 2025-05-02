@@ -17,6 +17,11 @@ class UpdateProfileSuccess extends HomeState {
   UpdateProfileSuccess(this.message);
 }
 
+class ImageProfileSuccess extends HomeState {
+  final String message;
+  ImageProfileSuccess(this.message);
+}
+
 
 class DeleteFavouriteSuccess extends HomeState {
   final String message;

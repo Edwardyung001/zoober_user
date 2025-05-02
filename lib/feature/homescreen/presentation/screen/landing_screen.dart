@@ -278,14 +278,14 @@ Widget _buildVehicle(BuildContext context, double screenHeight, double screenWid
 String _getImageBasedOnVehicleName(String vehicleName) {
   if (vehicleName == "Auto") {
     return 'Assets/auto.webp';
-  } else if (vehicleName == "Moto") {
+  } else if (vehicleName == "Bike") {
     return 'Assets/Scooter.png';
-  } else if (vehicleName == "Trip") {
+  } else if (vehicleName == "Cab") {
     return 'Assets/car.png';
-  } else if (vehicleName == "Intercity") {
+  } else if (vehicleName == "Permium Cab") {
     return 'Assets/car.png';
   } else {
-    return 'Assets/default.png'; // default image if no match found
+    return 'Assets/car.png'; // default image if no match found
   }
 }
 

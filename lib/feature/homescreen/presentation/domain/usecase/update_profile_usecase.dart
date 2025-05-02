@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:zoober_user_ride/feature/homescreen/presentation/domain/entity/update_profile_entity.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/domain/repository/update_profile_repository.dart';
 
@@ -15,7 +17,7 @@ class UpdateProfileUseCase {
     String? lastname,
     String? gender,
     String? dob,
-    String? image,
+    File? image,
   }) async {
     return await repository.profileUpdate(
       userId: userId,

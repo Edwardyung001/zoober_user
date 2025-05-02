@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:zoober_user_ride/core/constants/routing.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
 import 'package:zoober_user_ride/feature/auth/presentation/screen/signup.dart';
+import 'package:zoober_user_ride/feature/homescreen/presentation/screen/paymentmethod.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/start_riding.dart';
 
 class WhereAreYouGoScreen extends StatefulWidget {
@@ -297,7 +298,7 @@ class _WhereAreYouGoScreenState extends State<WhereAreYouGoScreen> {
                   width:screenWidth * 0.3,
                   child: InkWell(
                     onTap: () {
-                  navigateTo(context, StartRide());
+                  navigateTo(context, PaymentMethodScreen());
                   },
                   child: custombutton(
                         text: "Start Riding"),

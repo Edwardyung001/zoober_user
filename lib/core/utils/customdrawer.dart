@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zoober_user_ride/core/storage/local_storage.dart';
 import 'package:zoober_user_ride/feature/auth/presentation/screen/login.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/helpscreen.dart';
@@ -7,7 +7,7 @@ import 'package:zoober_user_ride/feature/homescreen/presentation/screen/notifica
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/paymentmethod.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/ridehistory.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/settings.dart';
-
+import '../../feature/homescreen/presentation/screen/bloc/home_bloc.dart';
 import '../constants/colors.dart';
 import '../constants/routing.dart';
 
@@ -38,6 +38,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
     setState(() {
       name = fetchedName;
     });
+    final userId = await SecureStorage.getValue('userId');
+    context.read<HomeBloc>().add(FetchingProfileRequested(userId: userId!));
   }
 
   Future<void> _clearAllAndLogout(BuildContext context) async {
@@ -47,12 +49,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
       MaterialPageRoute(builder: (context) => LoginScreen()),
           (Route<dynamic> route) => false,
     );
-
   }
 
-
+  @override
   Widget build(BuildContext context) {
-
     return Drawer(
       backgroundColor: white,
       child: Column(
@@ -61,55 +61,76 @@ class _CustomDrawerState extends State<CustomDrawer> {
           Container(
             height: 200,
             decoration: const BoxDecoration(
-                borderRadius:
-                    BorderRadius.only(bottomRight: Radius.circular(30)),
+                borderRadius: BorderRadius.only(bottomRight: Radius.circular(30)),
                 color: buttonrightcolor),
             padding: const EdgeInsets.only(top: 40, bottom: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
+            child: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                if (state is HomeLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is FetchingProfileSuccess) {
+                  final userDetails = state.userDetails;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: NetworkImage(
-                            "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg"),
-                        // backgroundImage: AssetImage('assets/profile.jpg'),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        (name ?? '').toUpperCase(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,overflow: TextOverflow.ellipsis,
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage: NetworkImage(
+                                userDetails[0]['profile']?.isNotEmpty == true
+                                    ? userDetails[0]['profile']
+                                    : "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg",
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              (name ?? '').toUpperCase(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.only(right: 18.0),
-                    child: Icon(
-                      Icons.fast_forward_sharp,
-                      color: white,
+                  );
+                } else {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundImage: NetworkImage(
+                            "https://img.freepik.com/premium-photo/3d-style-avatar-profile-picture-featuring-male-character-generative-ai_739548-13626.jpg",
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          (name ?? '').toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ],
+                  );
+                }
+              },
             ),
           ),
 
-          SizedBox(
-            height: 10,
-          ),
+          SizedBox(height: 10),
 
           // Drawer Items
           Expanded(
@@ -163,7 +184,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
                   text: 'Logout',
                   onTap: () async {
                     await _clearAllAndLogout(context);
-
                   },
                 ),
               ],

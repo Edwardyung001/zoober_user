@@ -18,6 +18,7 @@ class FetchingProfileModel{
         {
           "firstname": user?['firstname'] ?? 'dsf',
           "lastname": user?['lastname'] ?? '',
+          "profile": user?['profile'] ?? '',
           "mobile": user?['mobile'] ?? '',
           "email": user?['email'] ?? '',
           "gender": user?['gender'] ?? '',

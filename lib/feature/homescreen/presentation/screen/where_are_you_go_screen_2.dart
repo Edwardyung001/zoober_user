@@ -4,6 +4,7 @@ import 'package:zoober_user_ride/core/constants/mediaquery.dart';
 import 'package:intl/intl.dart';
 import 'package:zoober_user_ride/core/constants/routing.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
+import 'package:zoober_user_ride/feature/homescreen/presentation/screen/paymentmethod.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/screen/start_riding.dart';
 
 class WhereAreYouGoScreenTwo extends StatefulWidget {
@@ -275,18 +276,18 @@ class _WhereAreYouGoScreenTwoState extends State<WhereAreYouGoScreenTwo> {
                     "Drop 1:14 PM",
                     "₹177",
                   ),
-                  if (widget.vehicleType == "Car")
+                  if (widget.vehicleType == "Cab")
                   _buildVehicleCard(
-                    "Car",
+                    "Cab",
                     "Assets/car.png",
                     screenHeight,
                     "10 mins away",
                     "Drop 1:14 PM",
                     "₹177",
                   ),
-                  if (widget.vehicleType == "Intercity")
+                  if (widget.vehicleType == "Permium Cab")
                   _buildVehicleCard(
-                    "Intercity",
+                    "Permium Cab",
                     "Assets/car.png",
                     screenHeight,
                     "10 mins away",
@@ -303,7 +304,8 @@ class _WhereAreYouGoScreenTwoState extends State<WhereAreYouGoScreenTwo> {
                   width:screenWidth * 0.3,
                   child: InkWell(
                     onTap: () {
-                      navigateTo(context, StartRide());
+                      navigateTo(context, PaymentMethodScreen());
+
                     },
                     child: custombutton(
                         text: "Start Riding"),

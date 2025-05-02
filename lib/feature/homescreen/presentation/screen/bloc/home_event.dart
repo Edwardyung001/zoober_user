@@ -48,6 +48,15 @@ class EmailProfileRequested extends HomeEvent {
     required this.email,
   });
 }
+class ProfileImageRequested extends HomeEvent {
+  final String userId;
+  final File image;
+
+  ProfileImageRequested({
+    required this.userId,
+    required this.image,
+  });
+}
 
 class MobileProfileRequested extends HomeEvent {
   final String userId;

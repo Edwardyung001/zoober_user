@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zoober_user_ride/core/constants/colors.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
+import 'package:zoober_user_ride/feature/homescreen/presentation/screen/ridestart.dart';
+
+import '../../../../core/constants/routing.dart';
 
 
 class PaymentMethodScreen extends StatefulWidget {
@@ -103,7 +106,12 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               ),
             ),
             const Spacer(),
-            SizedBox(width: double.infinity, child: custombutton(text: "Pay")),
+            SizedBox(width: double.infinity, child: InkWell(
+              onTap: (){
+                navigateTo(context, StartRide());
+
+              },
+                child: custombutton(text: "Pay"))),
           ],
         ),
       ),

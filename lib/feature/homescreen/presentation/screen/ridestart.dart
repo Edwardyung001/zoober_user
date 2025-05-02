@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zoober_user_ride/core/constants/images.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
+import 'package:zoober_user_ride/feature/homescreen/presentation/screen/landing_screen.dart';
+
+import '../../../../core/constants/routing.dart';
 
 
 
@@ -38,7 +41,12 @@ class _StartRideState extends State<StartRide> {
               SizedBox(
                 height: 100,
               ),
-              SizedBox(width: 350, child: custombutton(text: "Done"))
+              SizedBox(width: 350, child: InkWell(
+                onTap: (){
+                  navigateTo(context, HomeScreen());
+
+                },
+                  child: custombutton(text: "Done")))
             ],
           ),
         ));

@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:zoober_user_ride/feature/homescreen/presentation/data/datasource/update_profile_datasource.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/data/model/update_profile_model.dart';
 import 'package:zoober_user_ride/feature/homescreen/presentation/domain/entity/update_profile_entity.dart';
@@ -18,7 +20,7 @@ class UpdateProfileRepositoryImpl implements UpdateProfileRepository {
     String? lastname,
     String? gender,
     String? dob,
-    String? image,
+    File? image,
   }) async {
     final UpdateProfileModel updateProfileModel = await updateProfileDatasource.profileUpdate(
       userId: userId,

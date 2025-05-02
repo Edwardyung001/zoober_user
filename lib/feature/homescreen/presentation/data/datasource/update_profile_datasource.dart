@@ -1,5 +1,7 @@
 
 
+import 'dart:io';
+
 import 'package:zoober_user_ride/core/network/api_connection.dart';
 import 'package:zoober_user_ride/core/network/api_routes.dart';
 import 'package:zoober_user_ride/core/storage/local_storage.dart';
@@ -18,7 +20,7 @@ Future<UpdateProfileModel> profileUpdate({
   String? lastname,
   String? gender,
   String? dob,
-  String? image,
+  File? image,
 }) async {
   String? token = await SecureStorage.getValue('token');
 

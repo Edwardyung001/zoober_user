@@ -5,6 +5,9 @@ import 'package:zoober_user_ride/core/constants/routing.dart';
 import 'package:zoober_user_ride/core/utils/custombutton.dart';
 import 'package:zoober_user_ride/feature/auth/presentation/bloc/auth_bloc.dart';
 import 'package:zoober_user_ride/feature/auth/presentation/screen/login.dart';
+
+import '../../../../core/storage/local_storage.dart';
+import '../../../homescreen/presentation/screen/landing_screen.dart';
 class SignUpScreen extends StatefulWidget {
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -39,23 +42,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is AuthLoading) {
             print('loading');
-
-          } else if (state is SignupSuccess) {
+          }
+          else if (state is SignupSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message,),backgroundColor: Colors.green,),
+              SnackBar(content: Text(state.message), backgroundColor: Colors.green),
             );
-            navigateTo(context, LoginScreen());
-          } else if (state is AuthFailure) {
+
+            /// 🔁 Immediately trigger login with the same credentials
+            context.read<AuthBloc>().add(LoginRequested(
+              phoneNumber: mobileNumberController.text.trim(),
+              password: passwordController.text.trim(),
+            ));
+          }
+          else if (state is LoginSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+            );
+            await SecureStorage.saveValue('token', state.token);
+            await SecureStorage.saveValue('name', state.name);
+            await SecureStorage.saveValue('userId', state.userId.toString());
+            navigateTo(context, HomeScreen());
+          }
+          else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: ${state.error}")),
             );
             print("Error: ${state.error}");
           }
         },
-        child: SingleChildScrollView(
+      child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: mediaQuery.width * 0.08,
@@ -69,7 +87,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     SizedBox(
-                      height: mediaQuery.height * 0.02,
+                      height: mediaQuery.height * 0.05,
                       child: Image.asset('Assets/logo2.jpg'),
                     ),
                   ],
@@ -200,7 +218,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   controller: passwordController,
                   obscureText: _obscureText,
                   inputFormatters: [
-                    LengthLimitingTextInputFormatter(10),
+                    LengthLimitingTextInputFormatter(15),
                   ],
                   decoration: InputDecoration(
                     border: OutlineInputBorder(

@@ -51,8 +51,6 @@ class _FavoritesListScreenState extends State<FavoritesListScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Favourite deleted successfully!")),
             );
-
-            // You can trigger fetching favourites again after successful deletion.
             fetching();
           }
         },
@@ -190,7 +188,7 @@ class _FavoritesListScreenState extends State<FavoritesListScreen> {
                         //   title: fav['title'],
                         //   description: updatedDescription,
                         // ));
-              
+
                         // Close the bottom sheet and show a success message
                         Navigator.pop(context);
                       },
